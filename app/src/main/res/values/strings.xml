@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">GameClock</string>
+
+    <string name="btnSetup">Setup</string>
+    <string name="btnStart">Start</string>
+    <string name="btnStats">Stats</string>
+
+    <string name="btnBlack">Black Player</string>
+    <string name="btnWhite">White Player</string>
+
+    <string name="btnLose">Lose</string>
+    <string name="btnDraw">Draw</string>
+</resources>
