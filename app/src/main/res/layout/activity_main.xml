@@ -9,10 +9,11 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:weightSum="19"
+    android:weightSum="18"
     tools:context="rtrk.pnrs.gameclock.MainActivity">
 
     <LinearLayout
+        android:id="@+id/layWhite"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -27,7 +28,7 @@
             android:divider="?android:dividerVertical"
             android:showDividers="middle">
             <Button
-                android:id="@+id/whiteLose"
+                android:id="@+id/btnWhiteLose"
                 android:rotation="180"
                 android:text="@string/btnLose"
                 android:layout_width="0dp"
@@ -36,7 +37,7 @@
                 style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
-                android:id="@+id/whiteDraw"
+                android:id="@+id/btnWhiteDraw"
                 android:rotation="180"
                 android:text="@string/btnDraw"
                 android:layout_width="0dp"
@@ -54,16 +55,17 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/laySettings"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingBottom="0dp"
         android:orientation="horizontal"
-        android:layout_weight="3"
+        android:layout_weight="2"
         style="?android:attr/buttonBarStyle"
         android:divider="?android:dividerVertical"
         android:showDividers="middle">
         <Button
-            android:id="@+id/setup"
+            android:id="@+id/btnSetup"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,7 +73,7 @@
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/start"
+            android:id="@+id/btnStart"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -79,7 +81,7 @@
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/stats"
+            android:id="@+id/btnStats"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -88,6 +90,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layBlack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -109,7 +112,7 @@
             android:divider="?android:dividerVertical"
             android:showDividers="middle">
             <Button
-                android:id="@+id/blackDraw"
+                android:id="@+id/btnBlackDraw"
                 android:text="@string/btnDraw"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -117,7 +120,7 @@
                 style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
-                android:id="@+id/blackLose"
+                android:id="@+id/btnBlackLose"
                 android:text="@string/btnLose"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
