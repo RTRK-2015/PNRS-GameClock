@@ -1,13 +1,18 @@
 <resources>
     <string name="app_name">GameClock</string>
 
-    <string name="btnSetup">Setup</string>
-    <string name="btnStart">Start</string>
-    <string name="btnStats">Stats</string>
+    <!-- MainActivity -->
+    <string name="btnMain_Setup">Setup</string>
+    <string name="btnMain_Start">Start</string>
+    <string name="btnMain_Stats">Stats</string>
 
-    <string name="btnBlack">Black Player</string>
-    <string name="btnWhite">White Player</string>
+    <string name="btnMain_Black">Black Player</string>
+    <string name="btnMain_White">White Player</string>
 
-    <string name="btnLose">Lose</string>
-    <string name="btnDraw">Draw</string>
+    <string name="btnMain_Lose">Lose</string>
+    <string name="btnMain_Draw">Draw</string>
+
+    <!-- SetupActivity -->
+    <string name="btnSetup_OK">OK</string>
+    <string name="btnSetup_Cancel">Cancel</string>
 </resources>

@@ -13,7 +13,7 @@
     tools:context="rtrk.pnrs.gameclock.MainActivity">
 
     <LinearLayout
-        android:id="@+id/layWhite"
+        android:id="@+id/layMain_White"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -28,26 +28,26 @@
             android:divider="?android:dividerVertical"
             android:showDividers="middle">
             <Button
-                android:id="@+id/btnWhiteLose"
+                android:id="@+id/btnMain_WhiteLose"
                 android:rotation="180"
-                android:text="@string/btnLose"
+                android:text="@string/btnMain_Lose"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
-                android:id="@+id/btnWhiteDraw"
+                android:id="@+id/btnMain_WhiteDraw"
                 android:rotation="180"
-                android:text="@string/btnDraw"
+                android:text="@string/btnMain_Draw"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 style="?android:attr/buttonBarButtonStyle"/>
         </LinearLayout>
         <Button
-            android:id="@+id/btnWhite"
-            android:text="@string/btnWhite"
+            android:id="@+id/btnMain_White"
+            android:text="@string/btnMain_White"
             android:rotation="180"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -55,7 +55,7 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/laySettings"
+        android:id="@+id/layMain_Settings"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:paddingBottom="0dp"
@@ -65,40 +65,40 @@
         android:divider="?android:dividerVertical"
         android:showDividers="middle">
         <Button
-            android:id="@+id/btnSetup"
+            android:id="@+id/btnMain_Setup"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btnSetup"
+            android:text="@string/btnMain_Setup"
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/btnStart"
+            android:id="@+id/btnMain_Start"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btnStart"
+            android:text="@string/btnMain_Start"
             android:layout_weight="1"/>
 
         <Button
-            android:id="@+id/btnStats"
+            android:id="@+id/btnMain_Stats"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btnStats"
+            android:text="@string/btnMain_Stats"
             android:layout_weight="1"/>
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/layBlack"
+        android:id="@+id/layMain_Black"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:weightSum="10"
         android:layout_weight="8">
         <Button
-            android:id="@+id/black"
-            android:text="@string/btnBlack"
+            android:id="@+id/btnMain_Black"
+            android:text="@string/btnMain_Black"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="8"/>
@@ -112,16 +112,16 @@
             android:divider="?android:dividerVertical"
             android:showDividers="middle">
             <Button
-                android:id="@+id/btnBlackDraw"
-                android:text="@string/btnDraw"
+                android:id="@+id/btnMain_BlackDraw"
+                android:text="@string/btnMain_Draw"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 style="?android:attr/buttonBarButtonStyle"/>
 
             <Button
-                android:id="@+id/btnBlackLose"
-                android:text="@string/btnLose"
+                android:id="@+id/btnMain_BlackLose"
+                android:text="@string/btnMain_Lose"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

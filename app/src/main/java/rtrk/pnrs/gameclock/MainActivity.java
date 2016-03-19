@@ -1,27 +1,20 @@
 package rtrk.pnrs.gameclock;
 
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import static rtrk.pnrs.gameclock.Common.attachOnClickListener;
+import static rtrk.pnrs.gameclock.Common.modifyButtonState;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener
+public class MainActivity
+    extends AppCompatActivity
+    implements View.OnClickListener
 {
-	static final String TAG = MainActivity.class.getSimpleName();
-
-	enum ButtonState
-	{
-		ENABLE,
-		DISABLE
-	}
-
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -29,50 +22,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 		setContentView(R.layout.activity_main);
 
 		// Disable controls
-		Log.i(TAG, "Disabling player buttons");
-		modifyButtons((ViewGroup) findViewById(R.id.layBlack), ButtonState.DISABLE);
-		modifyButtons((ViewGroup) findViewById(R.id.layWhite), ButtonState.DISABLE);
+		Log.d(TAG, "Disabling player buttons");
+		modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
+			Common.ButtonState.DISABLED);
+		modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
+            Common.ButtonState.DISABLED);
 
 		// Attach listeners
-		Log.i(TAG, "Attaching onClick listeners to buttons");
-		attachOnClickListeners();
-	}
-
-	void modifyButtons(ViewGroup viewGroup, ButtonState state)
-	{
-		for (int i = 0; i < viewGroup.getChildCount(); i++)
-		{
-			View view = viewGroup.getChildAt(i);
-
-			if (view instanceof Button)
-				view.setEnabled(state == ButtonState.ENABLE);
-			else if (view instanceof ViewGroup)
-				modifyButtons((ViewGroup) view, state);
-		}
-	}
-
-
-	void attachOnClickListeners()
-	{
-		try
-		{
-			for (Field f : R.id.class.getFields())
-			{
-				int modifiers = f.getModifiers();
-				if (f.getName().startsWith("btn")
-						&& Modifier.isPublic(modifiers)
-						&& Modifier.isStatic(modifiers)
-						&& Modifier.isFinal(modifiers))
-				{
-					findViewById(f.getInt(null)).setOnClickListener(this);
-				}
-			}
-		}
-		catch (IllegalAccessException ex)
-		{
-			Log.wtf(TAG, "Impossible");
-			ex.printStackTrace();
-		}
+		Log.d(TAG, "Attaching onClick to buttons");
+		attachOnClickListener(this, "btnMain_", TAG);
 	}
 
 
@@ -81,14 +39,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 	{
 		switch (v.getId())
 		{
-		case R.id.btnStart:
-			Log.i(TAG, "Enabling white controls");
-			modifyButtons((ViewGroup) findViewById(R.id.layWhite), ButtonState.ENABLE);
-			modifyButtons((ViewGroup) findViewById(R.id.laySettings), ButtonState.DISABLE);
+		case R.id.btnMain_Start:
+			Log.d(TAG, "Enabling white controls");
+			modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
+				Common.ButtonState.ENABLED);
+			modifyButtonState((ViewGroup)findViewById(R.id.layMain_Settings),
+				Common.ButtonState.DISABLED);
+			break;
+
+        case R.id.btnMain_Setup:
+            Log.d(TAG, "Entering setup");
+            startActivity(new Intent(this, SetupActivity.class));
+            break;
+
+		case R.id.btnMain_White:
+			Log.d(TAG, "White passed the turn");
+			modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
+				Common.ButtonState.ENABLED);
+			modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
+				Common.ButtonState.DISABLED);
+			break;
+
+		case R.id.btnMain_Black:
+			Log.d(TAG, "Black passed the turn");
+			modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
+				Common.ButtonState.ENABLED);
+			modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
+				Common.ButtonState.DISABLED);
 			break;
 
 		default:
 			break;
 		}
 	}
+
+
+	private static final String TAG = MainActivity.class.getSimpleName();
 }
