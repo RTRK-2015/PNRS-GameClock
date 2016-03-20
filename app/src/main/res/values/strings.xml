@@ -12,7 +12,41 @@
     <string name="btnMain_Lose">Lose</string>
     <string name="btnMain_Draw">Draw</string>
 
-    <!-- SetupActivity -->
-    <string name="btnSetup_OK">OK</string>
-    <string name="btnSetup_Cancel">Cancel</string>
+
+    <!-- Stats dialog -->
+    <string name="txtStats_Title">Statistics</string>
+
+
+    <!-- Stats preferences -->
+    <string name="prefStats_name">stats</string>
+    <string name="prefStats_whiteWins">whiteWins</string>
+    <string name="prefStats_blackWins">blackWins</string>
+    <string name="prefStats_draws">draws</string>
+
+
+    <!-- App preferences -->
+    <string name="prefApp_name">prefs</string>
+
+    <string name="prefApp_White">White</string>
+    <string name="prefApp_Black">Black</string>
+
+    <string name="prefApp_hour">Hours</string>
+    <string name="prefApp_min">Minutes</string>
+    <string name="prefApp_sec">Seconds</string>
+
+    <string name="prefApp_whiteHour">whiteHour</string>
+    <string name="prefApp_whiteMin">whiteMin</string>
+    <string name="prefApp_whiteSec">whiteSec</string>
+
+    <string name="prefApp_blackHour">blackHour</string>
+    <string name="prefApp_blackMin">blackMin</string>
+    <string name="prefApp_blackSec">blackSec</string>
+
+    <string name="prefApp_ResetStatsName">Reset statistics</string>
+    <string name="prefApp_ResetStatsMessage">Are you sure you want to reset
+        statistics?</string>
+
+    <string name="prefApp_ResetPrefsName">Reset to default</string>
+    <string name="prefApp_ResetPrefsMessage">Are you sure you want to reset
+        all settings to their defaults?</string>
 </resources>

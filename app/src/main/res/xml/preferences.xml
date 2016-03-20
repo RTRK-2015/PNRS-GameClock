@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/prefApp_White">
+    <EditTextPreference
+        android:key="@string/prefApp_whiteHour"
+        android:title="@string/prefApp_hour"
+        android:defaultValue="1"
+        android:persistent="true"
+        android:numeric="integer"/>
+    <EditTextPreference
+        android:key="@string/prefApp_whiteMin"
+        android:title="@string/prefApp_min"
+        android:defaultValue="0"
+        android:persistent="true"
+        android:numeric="integer"/>
+    <EditTextPreference
+        android:key="@string/prefApp_whiteSec"
+        android:title="@string/prefApp_sec"
+        android:defaultValue="0"
+        android:persistent="true"
+        android:numeric="integer"/>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="@string/prefApp_Black">
+    <EditTextPreference
+        android:key="@string/prefApp_blackHour"
+        android:title="@string/prefApp_hour"
+        android:defaultValue="1"
+        android:persistent="true"
+        android:numeric="integer"/>
+    <EditTextPreference
+        android:key="@string/prefApp_blackMin"
+        android:title="@string/prefApp_min"
+        android:defaultValue="0"
+        android:persistent="true"
+        android:numeric="integer"/>
+    <EditTextPreference
+        android:key="@string/prefApp_blackSec"
+        android:title="@string/prefApp_sec"
+        android:defaultValue="0"
+        android:persistent="true"
+        android:numeric="integer"/>
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:title="Reset">
+    <rtrk.pnrs.gameclock.prefs.YesNoPreference
+        android:dialogMessage="@string/prefApp_ResetStatsMessage"
+        android:title="@string/prefApp_ResetStatsName"/>
+    <rtrk.pnrs.gameclock.prefs.YesNoPreference
+        android:dialogMessage="@string/prefApp_ResetPrefsMessage"
+        android:title="@string/prefApp_ResetPrefsName"/>
+    </PreferenceCategory>
+</PreferenceScreen>

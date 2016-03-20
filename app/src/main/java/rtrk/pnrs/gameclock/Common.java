@@ -21,6 +21,9 @@ public final class Common
 
     public static void modifyButtonState(ViewGroup viewGroup, ButtonState state)
     {
+        if (viewGroup == null || state == null)
+            return;
+
         for (int i = 0; i < viewGroup.getChildCount(); i++)
         {
             View view = viewGroup.getChildAt(i);
@@ -42,14 +45,15 @@ public final class Common
             if (f.getName().startsWith(prefix)
                 && Modifier.isPublic(modifiers)
                 && Modifier.isStatic(modifiers)
-                && Modifier.isFinal(modifiers))
+                && Modifier.isFinal(modifiers)
+                && f.getType().equals(int.class))
             {
                 try
                 {
                     activity.findViewById(f.getInt(null))
                              .setOnClickListener(activity);
                 }
-                catch (IllegalAccessException ex)
+                catch (IllegalAccessException|NullPointerException ex)
                 {
                     Log.wtf(TAG, "Impossible: '" + f.getName() +
                         "' is declared public static final, but inaccessible");
