@@ -7,19 +7,19 @@
     <EditTextPreference
         android:key="@string/prefApp_whiteHour"
         android:title="@string/prefApp_hour"
-        android:defaultValue="1"
+        android:defaultValue="@integer/defaultHour"
         android:persistent="true"
         android:numeric="integer"/>
     <EditTextPreference
         android:key="@string/prefApp_whiteMin"
         android:title="@string/prefApp_min"
-        android:defaultValue="0"
+        android:defaultValue="@integer/defaultMin"
         android:persistent="true"
         android:numeric="integer"/>
     <EditTextPreference
         android:key="@string/prefApp_whiteSec"
         android:title="@string/prefApp_sec"
-        android:defaultValue="0"
+        android:defaultValue="@integer/defaultSec"
         android:persistent="true"
         android:numeric="integer"/>
     </PreferenceCategory>
@@ -30,19 +30,19 @@
     <EditTextPreference
         android:key="@string/prefApp_blackHour"
         android:title="@string/prefApp_hour"
-        android:defaultValue="1"
+        android:defaultValue="@integer/defaultHour"
         android:persistent="true"
         android:numeric="integer"/>
     <EditTextPreference
         android:key="@string/prefApp_blackMin"
         android:title="@string/prefApp_min"
-        android:defaultValue="0"
+        android:defaultValue="@integer/defaultMin"
         android:persistent="true"
         android:numeric="integer"/>
     <EditTextPreference
         android:key="@string/prefApp_blackSec"
         android:title="@string/prefApp_sec"
-        android:defaultValue="0"
+        android:defaultValue="@integer/defaultSec"
         android:persistent="true"
         android:numeric="integer"/>
     </PreferenceCategory>

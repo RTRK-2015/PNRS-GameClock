@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="defaultHour">1</integer>
+    <integer name="defaultMin">0</integer>
+    <integer name="defaultSec">0</integer>
+</resources>
