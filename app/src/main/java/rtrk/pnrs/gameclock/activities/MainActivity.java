@@ -7,11 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import rtrk.pnrs.gameclock.Common;
+import rtrk.pnrs.gameclock.Common.ButtonState;
 import rtrk.pnrs.gameclock.R;
 import rtrk.pnrs.gameclock.data.Preferences;
 import rtrk.pnrs.gameclock.data.Stats;
+import rtrk.pnrs.gameclock.data.Time;
 import rtrk.pnrs.gameclock.fragments.StatsDialogFragment;
 
 import static rtrk.pnrs.gameclock.Common.attachOnClickListener;
@@ -28,16 +31,19 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Disable controls
+        // Disable player controls
         Log.d(TAG, "Disabling player buttons");
-        modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
-            Common.ButtonState.DISABLED);
-        modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-            Common.ButtonState.DISABLED);
+        modifyWhiteControls(ButtonState.DISABLED);
+        modifyBlackControls(ButtonState.DISABLED);
 
         // Attach listeners
         Log.d(TAG, "Attaching onClick to buttons");
         attachOnClickListener(this, "btnMain_", TAG);
+
+        // Get preferences
+        Log.d(TAG, "Getting preferences");
+        stats = Stats.getStats(this);
+        prefs = Preferences.getPreferences(this);
     }
 
 
@@ -67,12 +73,9 @@ public class MainActivity
         {
         case R.id.btnMain_Start:
             Log.d(TAG, "Enabling white controls");
-            white.run();
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-                Common.ButtonState.ENABLED);
-            modifyButtonState(
-                (ViewGroup)findViewById(R.id.layMain_Settings),
-                Common.ButtonState.DISABLED);
+            resetMainButtonsText();
+            modifyWhiteControls(ButtonState.ENABLED);
+            modifySettingsControls(ButtonState.DISABLED);
             break;
 
         case R.id.btnMain_Setup:
@@ -89,28 +92,22 @@ public class MainActivity
         case R.id.btnMain_White:
             Log.d(TAG, "White passed the turn");
             awaitingDraw = false;
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
-                Common.ButtonState.ENABLED);
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-                Common.ButtonState.DISABLED);
+            modifyWhiteControls(ButtonState.DISABLED);
+            modifyBlackControls(ButtonState.ENABLED);
             break;
 
         case R.id.btnMain_WhiteLose:
             Log.d(TAG, "White lost");
             awaitingDraw = false;
             stats.blackWins += 1;
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-                Common.ButtonState.DISABLED);
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
-                Common.ButtonState.DISABLED);
-            modifyButtonState(
-                (ViewGroup)findViewById(R.id.layMain_Settings),
-                Common.ButtonState.ENABLED);
+            modifyWhiteControls(ButtonState.DISABLED);
+            modifyBlackControls(ButtonState.DISABLED);
+            modifySettingsControls(ButtonState.ENABLED);
+            resetMainButtonsText();
             break;
 
         case R.id.btnMain_WhiteDraw:
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-                Common.ButtonState.DISABLED);
+            modifyWhiteControls(ButtonState.DISABLED);
 
             if (awaitingDraw)
             {
@@ -118,45 +115,37 @@ public class MainActivity
                 awaitingDraw = false;
                 stats.draws += 1;
 
-                modifyButtonState(
-                    (ViewGroup)findViewById(R.id.layMain_Settings),
-                    Common.ButtonState.ENABLED);
+                modifySettingsControls(ButtonState.ENABLED);
+                resetMainButtonsText();
             }
             else
             {
                 Log.d(TAG, "White initiates a draw");
                 awaitingDraw = true;
 
-                modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
-                    Common.ButtonState.ENABLED);
+                modifyBlackControls(ButtonState.ENABLED);
             }
             break;
 
         case R.id.btnMain_Black:
             Log.d(TAG, "Black passed the turn");
             awaitingDraw = false;
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-                Common.ButtonState.ENABLED);
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
-                Common.ButtonState.DISABLED);
+            modifyWhiteControls(ButtonState.ENABLED);
+            modifyBlackControls(ButtonState.DISABLED);
             break;
 
         case R.id.btnMain_BlackLose:
             Log.d(TAG, "Black lost");
             awaitingDraw = false;
             stats.whiteWins += 1;
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-                Common.ButtonState.DISABLED);
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
-                Common.ButtonState.DISABLED);
-            modifyButtonState(
-                (ViewGroup)findViewById(R.id.layMain_Settings),
-                Common.ButtonState.ENABLED);
+            modifyWhiteControls(ButtonState.DISABLED);
+            modifyBlackControls(ButtonState.DISABLED);
+            modifySettingsControls(ButtonState.ENABLED);
+            resetMainButtonsText();
             break;
 
         case R.id.btnMain_BlackDraw:
-            modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
-                Common.ButtonState.DISABLED);
+            modifyBlackControls(ButtonState.DISABLED);
 
             if (awaitingDraw)
             {
@@ -164,17 +153,15 @@ public class MainActivity
                 awaitingDraw = false;
                 stats.draws += 1;
 
-                modifyButtonState(
-                    (ViewGroup)findViewById(R.id.layMain_Settings),
-                    Common.ButtonState.ENABLED);
+                modifySettingsControls(ButtonState.ENABLED);
+                resetMainButtonsText();
             }
             else
             {
                 Log.d(TAG, "Black initiates a draw");
                 awaitingDraw = true;
 
-                modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
-                    Common.ButtonState.ENABLED);
+                modifyWhiteControls(ButtonState.ENABLED);
             }
             break;
 
@@ -184,26 +171,50 @@ public class MainActivity
     }
 
 
+    private void modifyWhiteControls(Common.ButtonState state)
+    {
+        modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
+            state);
+    }
+
+
+    private void modifyBlackControls(Common.ButtonState state)
+    {
+        modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
+            state);
+    }
+
+
+    private void modifySettingsControls(Common.ButtonState state)
+    {
+        modifyButtonState((ViewGroup)findViewById(R.id.layMain_Settings),
+            state);
+    }
+
+
+    private void resetMainButtonsText()
+    {
+        ((Button)findViewById(R.id.btnMain_Black)).setText(
+            getString(R.string.btnMain_Black));
+
+        ((Button)findViewById(R.id.btnMain_White)).setText(
+            getString(R.string.btnMain_White));
+    }
+
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private Stats stats;
     private Preferences prefs;
     private boolean awaitingDraw = false;
 
+    private Time lastWhite, lastBlack;
     private Handler handler = new Handler();
-    private Runnable white = new Runnable()
+    private Runnable timeRunnable = new Runnable()
     {
         @Override
         public void run()
         {
-            handler.postDelayed(white, 500);
-        }
-    };
-    private Runnable black = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            handler.postDelayed(black, 500);
+            handler.postDelayed(timeRunnable, 200);
         }
     };
 }
