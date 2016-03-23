@@ -21,7 +21,7 @@ public class Time
 
     public long toLong()
     {
-        return 1000 * (hour * 3600 + min * 60 + sec) + millisec;
+        return 1000 * ((long)hour * 3600 + min * 60 + sec) + millisec;
     }
 
 

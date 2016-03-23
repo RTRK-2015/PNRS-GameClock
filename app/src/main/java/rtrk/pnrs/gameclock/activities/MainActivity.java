@@ -52,6 +52,7 @@ public class MainActivity
     {
         super.onPause();
 
+        stopTimer();
         Stats.putStats(this, stats);
     }
 
@@ -76,6 +77,12 @@ public class MainActivity
             resetMainButtonsText();
             modifyWhiteControls(ButtonState.ENABLED);
             modifySettingsControls(ButtonState.DISABLED);
+            lastWhite = Time.fromLong(System.currentTimeMillis());
+            lastBlack = null;
+            white = prefs.whiteTime;
+            black = prefs.blackTime;
+            isWhiteTurn = true;
+            timeRunnable.run();
             break;
 
         case R.id.btnMain_Setup:
@@ -94,16 +101,13 @@ public class MainActivity
             awaitingDraw = false;
             modifyWhiteControls(ButtonState.DISABLED);
             modifyBlackControls(ButtonState.ENABLED);
+            isWhiteTurn = false;
+            lastBlack = Time.fromLong(System.currentTimeMillis());
             break;
 
         case R.id.btnMain_WhiteLose:
             Log.d(TAG, "White lost");
-            awaitingDraw = false;
-            stats.blackWins += 1;
-            modifyWhiteControls(ButtonState.DISABLED);
-            modifyBlackControls(ButtonState.DISABLED);
-            modifySettingsControls(ButtonState.ENABLED);
-            resetMainButtonsText();
+            whiteLose();
             break;
 
         case R.id.btnMain_WhiteDraw:
@@ -117,6 +121,7 @@ public class MainActivity
 
                 modifySettingsControls(ButtonState.ENABLED);
                 resetMainButtonsText();
+                stopTimer();
             }
             else
             {
@@ -124,6 +129,7 @@ public class MainActivity
                 awaitingDraw = true;
 
                 modifyBlackControls(ButtonState.ENABLED);
+                isWhiteTurn = false;
             }
             break;
 
@@ -132,16 +138,13 @@ public class MainActivity
             awaitingDraw = false;
             modifyWhiteControls(ButtonState.ENABLED);
             modifyBlackControls(ButtonState.DISABLED);
+            isWhiteTurn = true;
+            lastWhite = Time.fromLong(System.currentTimeMillis());
             break;
 
         case R.id.btnMain_BlackLose:
             Log.d(TAG, "Black lost");
-            awaitingDraw = false;
-            stats.whiteWins += 1;
-            modifyWhiteControls(ButtonState.DISABLED);
-            modifyBlackControls(ButtonState.DISABLED);
-            modifySettingsControls(ButtonState.ENABLED);
-            resetMainButtonsText();
+            blackLose();
             break;
 
         case R.id.btnMain_BlackDraw:
@@ -155,6 +158,7 @@ public class MainActivity
 
                 modifySettingsControls(ButtonState.ENABLED);
                 resetMainButtonsText();
+                stopTimer();
             }
             else
             {
@@ -162,6 +166,7 @@ public class MainActivity
                 awaitingDraw = true;
 
                 modifyWhiteControls(ButtonState.ENABLED);
+                isWhiteTurn = true;
             }
             break;
 
@@ -202,18 +207,79 @@ public class MainActivity
     }
 
 
+    private void whiteLose()
+    {
+        awaitingDraw = false;
+        stats.blackWins += 1;
+        stopTimer();
+        modifyWhiteControls(ButtonState.DISABLED);
+        modifyBlackControls(ButtonState.DISABLED);
+        modifySettingsControls(ButtonState.ENABLED);
+        resetMainButtonsText();
+        Stats.putStats(this, stats);
+    }
+
+
+    private void blackLose()
+    {
+        awaitingDraw = false;
+        stats.whiteWins += 1;
+        modifyWhiteControls(ButtonState.DISABLED);
+        modifyBlackControls(ButtonState.DISABLED);
+        modifySettingsControls(ButtonState.ENABLED);
+        resetMainButtonsText();
+        stopTimer();
+        Stats.putStats(this, stats);
+    }
+
+
+    private void stopTimer()
+    {
+        handler.removeCallbacks(timeRunnable);
+    }
+
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private Stats stats;
     private Preferences prefs;
-    private boolean awaitingDraw = false;
+    private boolean awaitingDraw = false, isWhiteTurn = false;
 
-    private Time lastWhite, lastBlack;
+    private Time lastWhite, lastBlack, white, black;
     private Handler handler = new Handler();
     private Runnable timeRunnable = new Runnable()
     {
         @Override
         public void run()
         {
+            long current = System.currentTimeMillis();
+
+            if (isWhiteTurn)
+            {
+                long elapsed = current - lastWhite.toLong();
+
+                white = Time.fromLong(white.toLong() - elapsed);
+                lastWhite = Time.fromLong(current);
+
+                if (white.toLong() <= 0)
+                    whiteLose();
+
+                ((Button)findViewById(R.id.btnMain_White)).setText(
+                    getString(R.string.btnMain_White) + "\n" + white);
+            }
+            else
+            {
+                long elapsed = current - lastBlack.toLong();
+
+                black = Time.fromLong(black.toLong() - elapsed);
+                lastBlack = Time.fromLong(current);
+
+                if (black.toLong() <= 0)
+                    blackLose();
+
+                ((Button)findViewById(R.id.btnMain_Black)).setText(
+                    getString(R.string.btnMain_Black) + "\n" + black);
+            }
+
             handler.postDelayed(timeRunnable, 200);
         }
     };
