@@ -3,7 +3,6 @@ package rtrk.pnrs.gameclock.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,9 +13,9 @@ import rtrk.pnrs.gameclock.Common;
 import rtrk.pnrs.gameclock.Common.ButtonState;
 import rtrk.pnrs.gameclock.R;
 import rtrk.pnrs.gameclock.data.Preferences;
+import rtrk.pnrs.gameclock.data.Stat;
 import rtrk.pnrs.gameclock.data.Stats;
 import rtrk.pnrs.gameclock.data.Time;
-import rtrk.pnrs.gameclock.fragments.StatsDialogFragment;
 
 import static rtrk.pnrs.gameclock.Common.attachOnClickListener;
 import static rtrk.pnrs.gameclock.Common.modifyButtonState;
@@ -108,8 +107,7 @@ public class MainActivity
 
         case R.id.btnMain_Stats:
             Log.d(TAG, "Showing stats");
-            new StatsDialogFragment().show(getSupportFragmentManager(),
-                "stats");
+            startActivity(new Intent(this, StatsActivity.class));
             break;
 
         case R.id.btnMain_White:
@@ -139,10 +137,11 @@ public class MainActivity
             if (awaitingDraw)
             {
                 Log.d(TAG, "White confirms the draw");
-                awaitingDraw = false;
-                stats.draws += 1;
-                Stats.putStats(this, stats);
                 stopTimer();
+
+                awaitingDraw = false;
+                stats.list.add(new Stat(white, black, Stat.Won.DRAW));
+                Stats.putStats(this, stats);
 
                 isGameOver = true;
 
@@ -188,10 +187,11 @@ public class MainActivity
             if (awaitingDraw)
             {
                 Log.d(TAG, "Black confirms the draw");
-                awaitingDraw = false;
-                stats.draws += 1;
-                Stats.putStats(this, stats);
                 stopTimer();
+
+                awaitingDraw = false;
+                stats.list.add(new Stat(white, black, Stat.Won.DRAW));
+                Stats.putStats(this, stats);
 
                 isGameOver = true;
 
@@ -249,9 +249,10 @@ public class MainActivity
 
     private void whiteLose()
     {
-        awaitingDraw = false;
-        stats.blackWins += 1;
         stopTimer();
+
+        awaitingDraw = false;
+        stats.list.add(new Stat(white, black, Stat.Won.BLACK));
         Stats.putStats(this, stats);
 
         modifyWhiteControls(ButtonState.DISABLED);
@@ -270,9 +271,10 @@ public class MainActivity
 
     private void blackLose()
     {
-        awaitingDraw = false;
-        stats.whiteWins += 1;
         stopTimer();
+
+        awaitingDraw = false;
+        stats.list.add(new Stat(white, black, Stat.Won.WHITE));
         Stats.putStats(this, stats);
 
         modifyWhiteControls(ButtonState.DISABLED);

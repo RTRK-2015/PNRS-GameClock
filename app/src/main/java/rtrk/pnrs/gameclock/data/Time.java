@@ -1,7 +1,10 @@
 package rtrk.pnrs.gameclock.data;
 
 
+import java.io.Serializable;
+
 public class Time
+    implements Serializable
 {
     public int hour, min, sec, millisec;
 

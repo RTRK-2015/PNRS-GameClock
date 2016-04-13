@@ -2,53 +2,63 @@ package rtrk.pnrs.gameclock.data;
 
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.support.annotation.NonNull;
 
-import rtrk.pnrs.gameclock.R;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 
 
 public class Stats
 {
-    public int whiteWins, blackWins, draws;
+    public ArrayList<Stat> list;
 
-    public Stats(int whiteWins, int blackWins, int draws)
+
+    public Stats()
     {
-        this.whiteWins = whiteWins;
-        this.blackWins = blackWins;
-        this.draws     = draws;
+        list = new ArrayList<>();
+    }
+
+    public static void putStats(Context context, Stats stats)
+    {
+        try
+        {
+            FileOutputStream fos =
+                context.openFileOutput("stats", Context.MODE_PRIVATE);
+
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(stats.list);
+
+            oos.close();
+            fos.close();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
 
-    @NonNull
-    public static Stats getStats(@NonNull Context context)
+    public static Stats getStats(Context context)
     {
-        SharedPreferences preferences = context.getSharedPreferences(
-            context.getString(R.string.prefStats_name), Context.MODE_PRIVATE);
+        try
+        {
+            FileInputStream fis = context.openFileInput("stats");
+            ObjectInputStream ois = new ObjectInputStream(fis);
 
-        int whiteWins   = preferences.getInt(
-            context.getString(R.string.prefStats_whiteWins), 0),
-            blackWins   = preferences.getInt(
-                context.getString(R.string.prefStats_blackWins), 0),
-            draws       = preferences.getInt(
-                context.getString(R.string.prefStats_draws), 0);
+            Stats stats = new Stats();
+            stats.list = (ArrayList<Stat>)ois.readObject();
 
-        return new Stats(whiteWins, blackWins, draws);
-    }
+            ois.close();
+            fis.close();
 
-
-    public static void putStats(@NonNull Context context, @NonNull Stats stats)
-    {
-        SharedPreferences preferences = context.getSharedPreferences(
-            context.getString(R.string.prefStats_name), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-
-        editor.putInt(context.getString(R.string.prefStats_whiteWins),
-            stats.whiteWins);
-        editor.putInt(context.getString(R.string.prefStats_blackWins),
-            stats.blackWins);
-        editor.putInt(context.getString(R.string.prefStats_draws),
-            stats.draws);
-        editor.apply();
+            return stats;
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            return new Stats();
+        }
     }
 }

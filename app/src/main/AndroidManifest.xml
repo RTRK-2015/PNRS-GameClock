@@ -17,6 +17,8 @@
         </activity>
         <activity android:name=".activities.PreferencesActivity">
         </activity>
+        <activity android:name=".activities.StatsActivity">
+        </activity>
     </application>
 
 </manifest>

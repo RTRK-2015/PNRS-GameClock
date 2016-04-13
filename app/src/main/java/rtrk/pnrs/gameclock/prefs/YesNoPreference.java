@@ -24,6 +24,6 @@ public class YesNoPreference
     protected void onDialogClosed(boolean result)
     {
         if (result)
-            Stats.putStats(getContext(), new Stats(0, 0, 0));
+            Stats.putStats(getContext(), new Stats());
     }
 }
