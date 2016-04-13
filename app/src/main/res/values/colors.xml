@@ -5,6 +5,6 @@
     <color name="colorAccent">#009688</color>
 
     <color name="draw">#ffff00</color>
-    <color name="win">#ff0000</color>
-    <color name="lose">#00ff00</color>
+    <color name="lose">#ff0000</color>
+    <color name="win">#00ff00</color>
 </resources>
