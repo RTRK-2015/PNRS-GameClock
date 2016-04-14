@@ -47,6 +47,10 @@
         android:numeric="integer"/>
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="Theme">
+    </PreferenceCategory>
+
 
     <PreferenceCategory
         android:title="Reset">

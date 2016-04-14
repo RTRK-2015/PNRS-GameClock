@@ -16,6 +16,9 @@
     <string name="lose">Lose</string>
     <string name="win">Win</string>
 
+    <string name="blackPlayerWon">Black won</string>
+    <string name="whitePlayerWon">White won</string>
+
 
     <!-- Stats dialog -->
     <string name="txtStats_Title">Statistics</string>

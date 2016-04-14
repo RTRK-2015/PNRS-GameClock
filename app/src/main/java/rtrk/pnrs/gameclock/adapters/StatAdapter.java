@@ -9,6 +9,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 
 import rtrk.pnrs.gameclock.R;
@@ -78,6 +80,7 @@ public class StatAdapter
             holder.whiteLeft = (TextView)view.findViewById(R.id.txtStat_whiteLeft);
             holder.blackLeft = (TextView)view.findViewById(R.id.txtStat_blackLeft);
             holder.won = (ImageView)view.findViewById(R.id.imgStat_won);
+            holder.txtWon = (TextView)view.findViewById(R.id.txtStat_won);
             view.setTag(holder);
         }
 
@@ -89,6 +92,10 @@ public class StatAdapter
             stat.getWon() == Stat.Won.BLACK? res.getDrawable(R.drawable.black_win) :
             stat.getWon() == Stat.Won.WHITE? res.getDrawable(R.drawable.white_win) :
             res.getDrawable(R.drawable.draw));
+        holder.txtWon.setText(
+                stat.getWon() == Stat.Won.BLACK? res.getText(R.string.blackPlayerWon) :
+                stat.getWon() == Stat.Won.WHITE? res.getText(R.string.whitePlayerWon) :
+                res.getText(R.string.draw));
         holder.whiteLeft.setText(stat.getWhiteLeft().toString());
         holder.blackLeft.setText(stat.getBlackLeft().toString());
 
@@ -105,7 +112,7 @@ public class StatAdapter
 
     private class ViewHolder
     {
-        public TextView whiteLeft, blackLeft;
+        public TextView whiteLeft, blackLeft, txtWon;
         public ImageView won;
     }
 
