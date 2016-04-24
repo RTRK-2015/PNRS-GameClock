@@ -6,25 +6,25 @@ import java.io.Serializable;
 public class Time
     implements Serializable
 {
-    public int hour, min, sec, millisec;
+    public int h, m, s, millisec;
 
-    public Time(int hour, int min, int sec)
+    public Time(int h, int m, int s)
     {
-        this(hour, min, sec, 0);
+        this(h, m, s, 0);
     }
 
-    public Time(int hour, int min, int sec, int millisec)
+    public Time(int h, int m, int s, int millisec)
     {
-        this.hour     = hour;
-        this.min      = min;
-        this.sec      = sec;
+        this.h = h;
+        this.m = m;
+        this.s = s;
         this.millisec = millisec;
     }
 
 
     public long toLong()
     {
-        return 1000 * ((long)hour * 3600 + min * 60 + sec) + millisec;
+        return 1000 * ((long) h * 3600 + m * 60 + s) + millisec;
     }
 
 
@@ -46,6 +46,6 @@ public class Time
     @Override
     public String toString()
     {
-        return String.format("%d:%d:%d", hour, min, sec);
+        return String.format("%d:%d:%d", h, m, s);
     }
 }

@@ -19,32 +19,10 @@
         android:paddingTop="0dp"
         android:paddingBottom="0dp">
         <TextView
-            android:id="@+id/txtMain_WhiteDraw"
+            android:id="@+id/txtMain_White"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="@dimen/text_size"
-            android:textColor="@color/draw"
-            android:text="@string/draw"
-            android:gravity="center"
-            android:visibility="invisible"
-            android:rotation="180"/>
-        <TextView
-            android:id="@+id/txtMain_WhiteWin"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="@dimen/text_size"
-            android:textColor="@color/win"
-            android:text="@string/win"
-            android:gravity="center"
-            android:visibility="invisible"
-            android:rotation="180"/>
-        <TextView
-            android:id="@+id/txtMain_WhiteLose"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="@dimen/text_size"
-            android:textColor="@color/lose"
-            android:text="@string/lose"
             android:gravity="center"
             android:visibility="invisible"
             android:rotation="180"/>
@@ -80,11 +58,10 @@
                     android:layout_weight="1"
                     style="?android:attr/buttonBarButtonStyle"/>
             </LinearLayout>
-            <Button
+            <rtrk.pnrs.gameclock.views.AnalogClockView
                 android:id="@+id/btnMain_White"
-                android:text="@string/btnMain_White"
-                android:rotation="180"
                 android:layout_width="match_parent"
+                android:rotation="180"
                 android:layout_height="0dp"
                 android:layout_weight="8"/>
         </LinearLayout>
@@ -138,32 +115,12 @@
         android:paddingTop="0dp"
         android:paddingBottom="0dp">
         <TextView
-            android:id="@+id/txtMain_BlackDraw"
+            android:id="@+id/txtMain_Black"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textSize="@dimen/text_size"
-            android:textColor="@color/draw"
-            android:text="@string/draw"
             android:gravity="center"
             android:visibility="invisible" />
-        <TextView
-            android:id="@+id/txtMain_BlackWin"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="@dimen/text_size"
-            android:textColor="@color/win"
-            android:text="@string/win"
-            android:gravity="center"
-            android:visibility="invisible" />
-        <TextView
-            android:id="@+id/txtMain_BlackLose"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="@dimen/text_size"
-            android:textColor="@color/lose"
-            android:text="@string/lose"
-            android:gravity="center"
-            android:visibility="invisible"/>
         <LinearLayout
             android:id="@+id/layMain_Black"
             android:layout_width="match_parent"
@@ -171,9 +128,8 @@
             android:orientation="vertical"
             android:weightSum="10"
             android:visibility="visible">
-            <Button
+            <rtrk.pnrs.gameclock.views.AnalogClockView
                 android:id="@+id/btnMain_Black"
-                android:text="@string/btnMain_Black"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="8"/>

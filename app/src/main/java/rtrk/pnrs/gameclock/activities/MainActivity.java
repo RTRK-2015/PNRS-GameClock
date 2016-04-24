@@ -1,21 +1,22 @@
 package rtrk.pnrs.gameclock.activities;
 
+
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 
-import rtrk.pnrs.gameclock.Common;
-import rtrk.pnrs.gameclock.Common.ButtonState;
+import rtrk.pnrs.gameclock.Common.State;
 import rtrk.pnrs.gameclock.R;
 import rtrk.pnrs.gameclock.data.Preferences;
 import rtrk.pnrs.gameclock.data.Stat;
 import rtrk.pnrs.gameclock.data.Stats;
 import rtrk.pnrs.gameclock.data.Time;
+import rtrk.pnrs.gameclock.views.AnalogClockView;
 
 import static rtrk.pnrs.gameclock.Common.attachOnClickListener;
 import static rtrk.pnrs.gameclock.Common.modifyButtonState;
@@ -33,17 +34,22 @@ public class MainActivity
 
         // Disable player controls
         Log.d(TAG, "Disabling player buttons");
-        modifyWhiteControls(ButtonState.DISABLED);
-        modifyBlackControls(ButtonState.DISABLED);
+        modifyWhiteControls(State.DISABLED);
+        modifyBlackControls(State.DISABLED);
 
         // Attach listeners
         Log.d(TAG, "Attaching onClick to buttons");
         attachOnClickListener(this, "btnMain_", TAG);
 
+        // Get resources
+        resources = getResources();
+
         // Get preferences
         Log.d(TAG, "Getting preferences");
         stats = Stats.getStats(this);
         prefs = Preferences.getPreferences(this);
+
+        setClockTimes(prefs);
     }
 
 
@@ -52,7 +58,6 @@ public class MainActivity
     {
         super.onPause();
 
-        stopTimer();
         Stats.putStats(this, stats);
     }
 
@@ -64,6 +69,7 @@ public class MainActivity
 
         stats = Stats.getStats(this);
         prefs = Preferences.getPreferences(this);
+        setClockTimes(prefs);
     }
 
 
@@ -76,12 +82,8 @@ public class MainActivity
 
             findViewById(R.id.layMain_White).setVisibility(View.VISIBLE);
             findViewById(R.id.layMain_Black).setVisibility(View.VISIBLE);
-            findViewById(R.id.txtMain_WhiteDraw).setVisibility(View.INVISIBLE);
-            findViewById(R.id.txtMain_BlackDraw).setVisibility(View.INVISIBLE);
-            findViewById(R.id.txtMain_WhiteLose).setVisibility(View.INVISIBLE);
-            findViewById(R.id.txtMain_BlackLose).setVisibility(View.INVISIBLE);
-            findViewById(R.id.txtMain_WhiteWin).setVisibility(View.INVISIBLE);
-            findViewById(R.id.txtMain_BlackWin).setVisibility(View.INVISIBLE);
+            findViewById(R.id.txtMain_White).setVisibility(View.INVISIBLE);
+            findViewById(R.id.txtMain_Black).setVisibility(View.INVISIBLE);
         }
 
 
@@ -89,15 +91,13 @@ public class MainActivity
         {
         case R.id.btnMain_Start:
             Log.d(TAG, "Enabling white controls");
-            resetMainButtonsText();
-            modifyWhiteControls(ButtonState.ENABLED);
-            modifySettingsControls(ButtonState.DISABLED);
+            modifyWhiteControls(State.ENABLED);
+            modifySettingsControls(State.DISABLED);
             lastWhite = Time.fromLong(System.currentTimeMillis());
             lastBlack = Time.fromLong(System.currentTimeMillis());
             white = prefs.whiteTime;
             black = prefs.blackTime;
             isWhiteTurn = true;
-            timer.run();
             break;
 
         case R.id.btnMain_Setup:
@@ -114,14 +114,15 @@ public class MainActivity
             if (awaitingDraw)
             {
                 awaitingDraw = false;
+
                 findViewById(R.id.layMain_Black).setVisibility(View.VISIBLE);
-                findViewById(R.id.txtMain_BlackDraw).setVisibility(View.INVISIBLE);
+                findViewById(R.id.txtMain_Black).setVisibility(View.INVISIBLE);
             }
 
             Log.d(TAG, "White passed the turn");
             awaitingDraw = false;
-            modifyWhiteControls(ButtonState.DISABLED);
-            modifyBlackControls(ButtonState.ENABLED);
+            modifyWhiteControls(State.DISABLED);
+            modifyBlackControls(State.ENABLED);
             isWhiteTurn = false;
             lastBlack = Time.fromLong(System.currentTimeMillis());
             break;
@@ -132,12 +133,11 @@ public class MainActivity
             break;
 
         case R.id.btnMain_WhiteDraw:
-            modifyWhiteControls(ButtonState.DISABLED);
+            modifyWhiteControls(State.DISABLED);
 
             if (awaitingDraw)
             {
                 Log.d(TAG, "White confirms the draw");
-                stopTimer();
 
                 awaitingDraw = false;
                 stats.list.add(new Stat(white, black, Stat.Won.DRAW));
@@ -145,19 +145,22 @@ public class MainActivity
 
                 isGameOver = true;
 
-                modifySettingsControls(ButtonState.ENABLED);
-                resetMainButtonsText();
+                modifySettingsControls(State.ENABLED);
             }
             else
             {
                 Log.d(TAG, "White initiates a draw");
                 awaitingDraw = true;
 
-                modifyBlackControls(ButtonState.ENABLED);
+                modifyBlackControls(State.ENABLED);
                 isWhiteTurn = false;
             }
             findViewById(R.id.layMain_White).setVisibility(View.INVISIBLE);
-            findViewById(R.id.txtMain_WhiteDraw).setVisibility(View.VISIBLE);
+
+            TextView txtw = (TextView)findViewById(R.id.txtMain_White);
+            txtw.setVisibility(View.VISIBLE);
+            txtw.setText(resources.getString(R.string.draw));
+            txtw.setTextColor(resources.getColor(R.color.draw));
             break;
 
         case R.id.btnMain_Black:
@@ -165,13 +168,13 @@ public class MainActivity
             {
                 awaitingDraw = false;
                 findViewById(R.id.layMain_White).setVisibility(View.VISIBLE);
-                findViewById(R.id.txtMain_WhiteDraw).setVisibility(View.INVISIBLE);
+                findViewById(R.id.txtMain_White).setVisibility(View.INVISIBLE);
             }
 
             Log.d(TAG, "Black passed the turn");
             awaitingDraw = false;
-            modifyWhiteControls(ButtonState.ENABLED);
-            modifyBlackControls(ButtonState.DISABLED);
+            modifyWhiteControls(State.ENABLED);
+            modifyBlackControls(State.DISABLED);
             isWhiteTurn = true;
             lastWhite = Time.fromLong(System.currentTimeMillis());
             break;
@@ -182,12 +185,11 @@ public class MainActivity
             break;
 
         case R.id.btnMain_BlackDraw:
-            modifyBlackControls(ButtonState.DISABLED);
+            modifyBlackControls(State.DISABLED);
 
             if (awaitingDraw)
             {
                 Log.d(TAG, "Black confirms the draw");
-                stopTimer();
 
                 awaitingDraw = false;
                 stats.list.add(new Stat(white, black, Stat.Won.DRAW));
@@ -195,19 +197,22 @@ public class MainActivity
 
                 isGameOver = true;
 
-                modifySettingsControls(ButtonState.ENABLED);
-                resetMainButtonsText();
+                modifySettingsControls(State.ENABLED);
             }
             else
             {
                 Log.d(TAG, "Black initiates a draw");
                 awaitingDraw = true;
 
-                modifyWhiteControls(ButtonState.ENABLED);
+                modifyWhiteControls(State.ENABLED);
                 isWhiteTurn = true;
             }
             findViewById(R.id.layMain_Black).setVisibility(View.INVISIBLE);
-            findViewById(R.id.txtMain_BlackDraw).setVisibility(View.VISIBLE);
+
+            TextView txtb = (TextView)findViewById(R.id.txtMain_Black);
+            txtb.setVisibility(View.VISIBLE);
+            txtb.setText(resources.getString(R.string.draw));
+            txtb.setTextColor(resources.getColor(R.color.draw));
             break;
 
         default:
@@ -216,85 +221,94 @@ public class MainActivity
     }
 
 
-    private void modifyWhiteControls(Common.ButtonState state)
+    private void setClockTimes(Preferences prefs)
+    {
+        AnalogClockView white = (AnalogClockView)findViewById(R.id.btnMain_White);
+        white.setH(prefs.whiteTime.h % 12);
+        white.setM(prefs.whiteTime.m % 60);
+        white.setS(prefs.whiteTime.s % 60);
+
+        AnalogClockView black = (AnalogClockView)findViewById(R.id.btnMain_Black);
+        black.setH(prefs.blackTime.h % 12);
+        black.setM(prefs.blackTime.m % 60);
+        black.setS(prefs.blackTime.s % 60);
+    }
+
+
+    private void modifyWhiteControls(State state)
     {
         modifyButtonState((ViewGroup)findViewById(R.id.layMain_White),
             state);
     }
 
 
-    private void modifyBlackControls(Common.ButtonState state)
+    private void modifyBlackControls(State state)
     {
         modifyButtonState((ViewGroup)findViewById(R.id.layMain_Black),
             state);
     }
 
 
-    private void modifySettingsControls(Common.ButtonState state)
+    private void modifySettingsControls(State state)
     {
         modifyButtonState((ViewGroup)findViewById(R.id.layMain_Settings),
             state);
     }
 
 
-    private void resetMainButtonsText()
-    {
-        ((Button)findViewById(R.id.btnMain_Black)).setText(
-            getString(R.string.btnMain_Black));
-
-        ((Button)findViewById(R.id.btnMain_White)).setText(
-            getString(R.string.btnMain_White));
-    }
-
-
     private void whiteLose()
     {
-        stopTimer();
-
         awaitingDraw = false;
         stats.list.add(new Stat(white, black, Stat.Won.BLACK));
         Stats.putStats(this, stats);
 
-        modifyWhiteControls(ButtonState.DISABLED);
-        modifyBlackControls(ButtonState.DISABLED);
-        modifySettingsControls(ButtonState.ENABLED);
+        modifyWhiteControls(State.DISABLED);
+        modifyBlackControls(State.DISABLED);
+        modifySettingsControls(State.ENABLED);
 
         findViewById(R.id.layMain_White).setVisibility(View.INVISIBLE);
         findViewById(R.id.layMain_Black).setVisibility(View.INVISIBLE);
-        findViewById(R.id.txtMain_WhiteLose).setVisibility(View.VISIBLE);
-        findViewById(R.id.txtMain_BlackWin).setVisibility(View.VISIBLE);
-        isGameOver = true;
 
-        resetMainButtonsText();
+        TextView txtw = (TextView)findViewById(R.id.txtMain_White);
+        txtw.setVisibility(View.VISIBLE);
+        txtw.setText(resources.getString(R.string.lose));
+        txtw.setTextColor(resources.getColor(R.color.lose));
+
+        TextView txtb = (TextView)findViewById(R.id.txtMain_Black);
+        txtb.setVisibility(View.VISIBLE);
+        txtb.setText(resources.getString(R.string.win));
+        txtb.setTextColor(resources.getColor(R.color.win));
+
+        isGameOver = true;
     }
 
 
     private void blackLose()
     {
-        stopTimer();
-
         awaitingDraw = false;
         stats.list.add(new Stat(white, black, Stat.Won.WHITE));
         Stats.putStats(this, stats);
 
-        modifyWhiteControls(ButtonState.DISABLED);
-        modifyBlackControls(ButtonState.DISABLED);
-        modifySettingsControls(ButtonState.ENABLED);
+        modifyWhiteControls(State.DISABLED);
+        modifyBlackControls(State.DISABLED);
+        modifySettingsControls(State.ENABLED);
 
         findViewById(R.id.layMain_Black).setVisibility(View.INVISIBLE);
         findViewById(R.id.layMain_White).setVisibility(View.INVISIBLE);
-        findViewById(R.id.txtMain_BlackLose).setVisibility(View.VISIBLE);
-        findViewById(R.id.txtMain_WhiteWin).setVisibility(View.VISIBLE);
+
+        TextView txtb = (TextView)findViewById(R.id.txtMain_Black);
+        txtb.setVisibility(View.VISIBLE);
+        txtb.setText(resources.getString(R.string.lose));
+        txtb.setTextColor(resources.getColor(R.color.lose));
+
+        TextView txtw = (TextView)findViewById(R.id.txtMain_White);
+        txtw.setVisibility(View.VISIBLE);
+        txtw.setText(resources.getString(R.string.win));
+        txtw.setTextColor(resources.getColor(R.color.win));
+
         isGameOver = true;
-
-        resetMainButtonsText();
     }
 
-
-    private void stopTimer()
-    {
-        handler.removeCallbacks(timer);
-    }
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -302,44 +316,7 @@ public class MainActivity
     private Preferences prefs;
     private boolean awaitingDraw = false, isWhiteTurn = false;
     private boolean isGameOver = false;
+    private Resources resources;
 
     private Time lastWhite, lastBlack, white, black;
-    private Handler handler = new Handler();
-    private Runnable timer = new Runnable()
-    {
-        @Override
-        public void run()
-        {
-            long current = System.currentTimeMillis();
-
-            if (isWhiteTurn)
-            {
-                long elapsed = current - lastWhite.toLong();
-
-                white = Time.fromLong(white.toLong() - elapsed);
-                lastWhite = Time.fromLong(current);
-
-                if (white.toLong() <= 0)
-                    whiteLose();
-
-                ((Button)findViewById(R.id.btnMain_White)).setText(
-                    getString(R.string.btnMain_White) + "\n" + white);
-            }
-            else
-            {
-                long elapsed = current - lastBlack.toLong();
-
-                black = Time.fromLong(black.toLong() - elapsed);
-                lastBlack = Time.fromLong(current);
-
-                if (black.toLong() <= 0)
-                    blackLose();
-
-                ((Button)findViewById(R.id.btnMain_Black)).setText(
-                    getString(R.string.btnMain_Black) + "\n" + black);
-            }
-
-            handler.postDelayed(timer, 200);
-        }
-    };
 }
