@@ -46,6 +46,6 @@ public class Time
     @Override
     public String toString()
     {
-        return String.format("%d:%d:%d", h, m, s);
+        return String.format("%02d:%02d:%02d", h, m, s);
     }
 }
