@@ -2,7 +2,6 @@ package rtrk.pnrs.gameclock.views;
 
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -11,8 +10,6 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
-import rtrk.pnrs.gameclock.R;
-
 
 public class AnalogClockView
     extends View
@@ -20,14 +17,14 @@ public class AnalogClockView
     public AnalogClockView(Context context)
     {
         super(context);
-        init(context, null);
+        init();
     }
 
 
     public AnalogClockView(Context context, AttributeSet attrs)
     {
         super(context, attrs);
-        init(context, attrs);
+        init();
     }
 
 
@@ -35,7 +32,7 @@ public class AnalogClockView
         int defStyleAttr)
     {
         super(context, attrs, defStyleAttr);
-        init(context, attrs);
+        init();
     }
 
 
@@ -72,10 +69,7 @@ public class AnalogClockView
         double ydiff = getYC() - event.getY();
         double d = Math.sqrt(Math.pow(xdiff, 2) + Math.pow(ydiff, 2));
 
-        if (d <= getRadius())
-            return true;
-        else
-            return false;
+        return d <= getRadius();
     }
 
 
@@ -115,9 +109,11 @@ public class AnalogClockView
 
         for (int i = 0; i < 12; ++i)
         {
+            // Hour dot
             canvas.drawCircle(getXC(), getYC() - getRadius() + border + 6, 8,
                 black);
 
+            // The number itself
             String num = i == 0? "12" : Integer.valueOf(i).toString();
             canvas.drawText(num, getXC() - 13,
                 getYC() - getRadius() + border + 50, text);
@@ -126,6 +122,7 @@ public class AnalogClockView
 
             for (int j = 0; j < 4; ++j)
             {
+                // Minute dots
                 canvas.drawCircle(getXC(), getYC() - getRadius() + border + 3,
                     4, black);
                 canvas.rotate(30 / 5, getXC(), getYC());
@@ -141,7 +138,7 @@ public class AnalogClockView
         canvas.drawCircle(getXC(), getYC(), 15, black);
         canvas.drawCircle(getXC(), getYC(), 4, white);
 
-        // Hours
+        // Hours hand
         Path hours = new Path();
         canvas.save();
         canvas.rotate(h, getXC(), getYC());
@@ -155,7 +152,7 @@ public class AnalogClockView
         canvas.restore();
 
 
-        // Minutes
+        // Minutes hand
         Path minutes = new Path();
         canvas.save();
         canvas.rotate(m, getXC(), getYC());
@@ -170,14 +167,7 @@ public class AnalogClockView
     }
 
 
-    private void init(Context context, AttributeSet attrs)
-    {
-        initPaint();
-        initAttributes(context, attrs);
-    }
-
-
-    private void initPaint()
+    private void init()
     {
         text = new Paint();
         text.setColor(Color.BLACK);
@@ -210,19 +200,6 @@ public class AnalogClockView
         bi[2] /= Math.sqrt(2);
         circleBorderInactive = new Paint();
         circleBorderInactive.setColor(Color.HSVToColor(0xFF, bi));
-    }
-
-
-    private void initAttributes(Context context, AttributeSet attrs)
-    {
-        TypedArray ta = context.obtainStyledAttributes(attrs,
-            R.styleable.AnalogClockView);
-
-        h = ta.getInt(R.styleable.AnalogClockView_h, 0) * 30;
-        m = ta.getInt(R.styleable.AnalogClockView_m, 0) * (30 / 5);
-        s = ta.getInt(R.styleable.AnalogClockView_s, 0) * (30 / 5);
-
-        ta.recycle();
     }
 
 

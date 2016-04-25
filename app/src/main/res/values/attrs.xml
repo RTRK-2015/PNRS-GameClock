@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <declare-styleable name="AnalogClockView">
-        <attr name="h" format="integer"/>
-        <attr name="m" format="integer"/>
-        <attr name="s" format="integer"/>
-    </declare-styleable>
-</resources>
