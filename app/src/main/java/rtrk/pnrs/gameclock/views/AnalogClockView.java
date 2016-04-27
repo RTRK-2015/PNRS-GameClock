@@ -107,26 +107,28 @@ public class AnalogClockView
     {
         canvas.save();
 
-        for (int i = 0; i < 12; ++i)
+        for (int i = 0; i < 60; ++i)
         {
-            // Hour dot
-            canvas.drawCircle(getXC(), getYC() - getRadius() + border + 6, 8,
-                black);
+            if (i % 5 == 0)
+            {
+                // Hour dot
+                canvas.drawCircle(getXC(), getYC() - getRadius() + border + 6, 8,
+                        black);
 
-            // The number itself
-            String num = i == 0? "12" : Integer.valueOf(i).toString();
-            canvas.drawText(num, getXC() - 13,
-                getYC() - getRadius() + border + 50, text);
+                // The number itself
+                String num = i == 0 ? "12" : Integer.valueOf(i / 5).toString();
+                canvas.save();
+                canvas.rotate(-i * 6, getXC(), getYC() - getRadius() + border + 36);
+                canvas.drawText(num, getXC() - (i / 5 >= 10 || i == 0? 15 : 9),
+                        getYC() - getRadius() + border + 50, text);
+                canvas.restore();
+            }
 
             canvas.rotate(30 / 5, getXC(), getYC());
 
-            for (int j = 0; j < 4; ++j)
-            {
                 // Minute dots
-                canvas.drawCircle(getXC(), getYC() - getRadius() + border + 3,
+            canvas.drawCircle(getXC(), getYC() - getRadius() + border + 3,
                     4, black);
-                canvas.rotate(30 / 5, getXC(), getYC());
-            }
         }
 
         canvas.restore();
@@ -219,9 +221,9 @@ public class AnalogClockView
     private float getRadius()
     {
         if (getHeight() > getWidth())
-            return getWidth() / 2 - 15;
+            return getWidth() / 2 - margin;
         else
-            return getHeight() / 2 - 15;
+            return getHeight() / 2 - margin;
     }
 
 
@@ -230,5 +232,6 @@ public class AnalogClockView
         circleBorderInactive, black, white, text;
 
     int h, m, s;
-    final int border = 15;
+    static final int border = 15;
+    static final int margin = 15;
 }
