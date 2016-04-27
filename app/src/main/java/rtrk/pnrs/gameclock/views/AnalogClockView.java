@@ -46,6 +46,7 @@ public class AnalogClockView
     public void setM(int m)
     {
         this.m = m * (30 / 5);
+        h += this.m / 12;
         invalidate();
     }
 
