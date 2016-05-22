@@ -10,6 +10,8 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import rtrk.pnrs.gameclock.data.Time;
+
 
 public class AnalogClockView
     extends View
@@ -54,6 +56,16 @@ public class AnalogClockView
     public void setS(int s)
     {
         this.s = s * (30 / 5);
+        m += this.s / 60;
+        invalidate();
+    }
+
+
+    public void setTime(Time time)
+    {
+        this.s = time.s * (30 / 5);
+        this.m = time.m * (30 / 5) + (this.s / 60);
+        this.h = time.h * 30 + (this.m / 12);
         invalidate();
     }
 
@@ -144,7 +156,7 @@ public class AnalogClockView
         // Hours hand
         Path hours = new Path();
         canvas.save();
-        canvas.rotate(h, getXC(), getYC());
+        canvas.rotate(-h, getXC(), getYC());
         hours.moveTo(getXC() - 4, getYC() - 15);
         hours.lineTo(getXC() - 10, getYC() - getRadius() + border + 70);
         hours.lineTo(getXC(), getYC() - getRadius() + border + 55);
@@ -158,14 +170,28 @@ public class AnalogClockView
         // Minutes hand
         Path minutes = new Path();
         canvas.save();
-        canvas.rotate(m, getXC(), getYC());
+        canvas.rotate(-m, getXC(), getYC());
         minutes.moveTo(getXC() - 4, getYC() - 15);
         minutes.lineTo(getXC() - 10, getYC() - getRadius() + border + 40);
-        minutes.lineTo(getXC(), getYC() - getRadius() + border + 15);
+        minutes.lineTo(getXC(), getYC() - getRadius() + border + 20);
         minutes.lineTo(getXC() + 10, getYC() - getRadius() + border + 40);
         minutes.lineTo(getXC() + 4, getYC() - 15);
         minutes.close();
         canvas.drawPath(minutes, black);
+        canvas.restore();
+
+
+        // Seconds hand
+        Path seconds = new Path();
+        canvas.save();
+        canvas.rotate(-s, getXC(), getYC());
+        seconds.moveTo(getXC() - 2, getYC() - 15);
+        seconds.lineTo(getXC() - 2, getYC() - getRadius() + border + 10);
+        seconds.lineTo(getXC(), getYC() - getRadius() + border + 10);
+        seconds.lineTo(getXC() + 2, getYC() - getRadius() + border + 10);
+        seconds.lineTo(getXC() + 2, getYC() - 15);
+        seconds.close();
+        canvas.drawPath(seconds, black);
         canvas.restore();
     }
 
