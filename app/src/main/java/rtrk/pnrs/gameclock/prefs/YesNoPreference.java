@@ -5,7 +5,7 @@ import android.content.Context;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 
-import rtrk.pnrs.gameclock.data.Stats;
+import rtrk.pnrs.gameclock.StatsProvider;
 
 
 public class YesNoPreference
@@ -24,6 +24,6 @@ public class YesNoPreference
     protected void onDialogClosed(boolean result)
     {
         if (result)
-            Stats.putStats(getContext(), new Stats());
+            getContext().getContentResolver().delete(StatsProvider.CONTENT_URI, null, null);
     }
 }

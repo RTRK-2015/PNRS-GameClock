@@ -1,7 +1,9 @@
 package rtrk.pnrs.gameclock.adapters;
 
+
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,10 +11,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
+import rtrk.pnrs.gameclock.GameClockBinder;
 import rtrk.pnrs.gameclock.R;
 import rtrk.pnrs.gameclock.data.Stat;
 
@@ -24,6 +25,16 @@ public class StatAdapter
     {
         mContext = context;
         mList = new ArrayList<>();
+
+        Resources mResources = mContext.getResources();
+
+        mWhiteImg = mResources.getDrawable(R.drawable.white_win);
+        mBlackImg = mResources.getDrawable(R.drawable.black_win);
+        mDrawImg = mResources.getDrawable(R.drawable.draw);
+
+        mWhiteTxt = mResources.getText(R.string.whitePlayerWon);
+        mBlackTxt = mResources.getText(R.string.blackPlayerWon);
+        mDrawTxt = mResources.getText(R.string.draw);
     }
 
 
@@ -87,17 +98,14 @@ public class StatAdapter
         Stat stat = (Stat)getItem(position);
         ViewHolder holder = (ViewHolder)view.getTag();
 
-        Resources res = mContext.getResources();
         holder.won.setImageDrawable(
-            stat.getWon() == Stat.Won.BLACK? res.getDrawable(R.drawable.black_win) :
-            stat.getWon() == Stat.Won.WHITE? res.getDrawable(R.drawable.white_win) :
-            res.getDrawable(R.drawable.draw));
+            stat.won == GameClockBinder.BLACK_PLAYER_ID? mBlackImg :
+            stat.won == GameClockBinder.WHITE_PLAYER_ID? mWhiteImg : mDrawImg);
         holder.txtWon.setText(
-                stat.getWon() == Stat.Won.BLACK? res.getText(R.string.blackPlayerWon) :
-                stat.getWon() == Stat.Won.WHITE? res.getText(R.string.whitePlayerWon) :
-                res.getText(R.string.draw));
-        holder.whiteLeft.setText(stat.getWhiteLeft().toString());
-        holder.blackLeft.setText(stat.getBlackLeft().toString());
+                stat.won == GameClockBinder.BLACK_PLAYER_ID? mBlackTxt :
+                stat.won == GameClockBinder.WHITE_PLAYER_ID? mWhiteTxt : mDrawTxt);
+        holder.whiteLeft.setText(stat.whiteLeft.toString());
+        holder.blackLeft.setText(stat.blackLeft.toString());
 
         return view;
     }
@@ -117,6 +125,8 @@ public class StatAdapter
     }
 
 
+    private Drawable mBlackImg, mWhiteImg, mDrawImg;
+    private CharSequence mBlackTxt, mWhiteTxt, mDrawTxt;
     private Context mContext;
     private ArrayList<Stat> mList;
 }

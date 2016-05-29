@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="rtrk.pnrs.gameclock"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="rtrk.pnrs.gameclock">
 
     <application
         android:allowBackup="true"
@@ -23,7 +23,15 @@
         <service
             android:name=".GameClockService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true">
         </service>
+
+        <provider
+            android:name=".StatsProvider"
+            android:authorities="rtrk.pnrs.gameclock"
+            android:enabled="true"
+            android:exported="true">
+        </provider>
     </application>
+
 </manifest>

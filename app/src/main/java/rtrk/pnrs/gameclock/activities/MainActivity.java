@@ -2,6 +2,8 @@ package rtrk.pnrs.gameclock.activities;
 
 
 import android.content.ComponentName;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
@@ -21,9 +23,9 @@ import rtrk.pnrs.gameclock.IGameClockBinder;
 import rtrk.pnrs.gameclock.IGameTimeListener;
 import rtrk.pnrs.gameclock.IGameTimeListener.Stub;
 import rtrk.pnrs.gameclock.R;
+import rtrk.pnrs.gameclock.StatDBHelper;
+import rtrk.pnrs.gameclock.StatsProvider;
 import rtrk.pnrs.gameclock.data.Preferences;
-import rtrk.pnrs.gameclock.data.Stat;
-import rtrk.pnrs.gameclock.data.Stats;
 import rtrk.pnrs.gameclock.data.Time;
 import rtrk.pnrs.gameclock.views.AnalogClockView;
 
@@ -55,8 +57,10 @@ public class MainActivity
 
         // Get preferences
         Log.d(TAG, "Getting preferences");
-        stats = Stats.getStats(this);
         prefs = Preferences.getPreferences(this);
+
+        white = prefs.whiteTime;
+        black = white;
 
 
         Intent intent = new Intent(this, GameClockService.class);
@@ -66,16 +70,9 @@ public class MainActivity
             Log.e(TAG, "Binding failed");
         }
 
+        resolver = getContentResolver();
 
         setClockTimes(prefs);
-    }
-
-
-    @Override
-    public void onPause()
-    {
-        Stats.putStats(this, stats);
-        super.onPause();
     }
 
 
@@ -84,7 +81,6 @@ public class MainActivity
     {
         super.onResume();
 
-        stats = Stats.getStats(this);
         prefs = Preferences.getPreferences(this);
         setClockTimes(prefs);
     }
@@ -118,133 +114,126 @@ public class MainActivity
 
             switch (v.getId())
             {
-                case R.id.btnMain_Start:
-                    Log.d(TAG, "Enabling white controls");
-                    modifyWhiteControls(State.ENABLED);
-                    modifySettingsControls(State.DISABLED);
-                    white = prefs.whiteTime;
-                    black = prefs.blackTime;
-                    isWhiteTurn = true;
-                    service.start(white.toLong(), callback);
-                    break;
+            case R.id.btnMain_Start:
+                Log.d(TAG, "Enabling white controls");
+                modifyWhiteControls(State.ENABLED);
+                modifySettingsControls(State.DISABLED);
+                white = prefs.whiteTime;
+                black = white;
+                service.start(white.toLong(), callback);
+                break;
 
-                case R.id.btnMain_Setup:
-                    Log.d(TAG, "Entering setup");
-                    startActivity(new Intent(this, PreferencesActivity.class));
-                    break;
+            case R.id.btnMain_Setup:
+                Log.d(TAG, "Entering setup");
+                startActivity(new Intent(this, PreferencesActivity.class));
+                break;
 
-                case R.id.btnMain_Stats:
-                    Log.d(TAG, "Showing stats");
-                    startActivity(new Intent(this, StatsActivity.class));
-                    break;
+            case R.id.btnMain_Stats:
+                Log.d(TAG, "Showing stats");
+                startActivity(new Intent(this, StatsActivity.class));
+                break;
 
-                case R.id.btnMain_White:
-                    if (awaitingDraw)
-                    {
-                        awaitingDraw = false;
-
-                        findViewById(R.id.layMain_Black).setVisibility(View.VISIBLE);
-                        findViewById(R.id.txtMain_Black).setVisibility(View.INVISIBLE);
-                    }
-
-                    Log.d(TAG, "White passed the turn");
+            case R.id.btnMain_White:
+                if (awaitingDraw)
+                {
                     awaitingDraw = false;
-                    modifyWhiteControls(State.DISABLED);
+                    findViewById(R.id.layMain_Black).setVisibility(View.VISIBLE);
+                    findViewById(R.id.txtMain_Black).setVisibility(View.INVISIBLE);
+                }
+
+                Log.d(TAG, "White passed the turn");
+                awaitingDraw = false;
+                modifyWhiteControls(State.DISABLED);
+                modifyBlackControls(State.ENABLED);
+                service.turn();
+                break;
+
+            case R.id.btnMain_WhiteLose:
+                Log.d(TAG, "White lost");
+                whiteLose();
+                break;
+
+            case R.id.btnMain_WhiteDraw:
+                modifyWhiteControls(State.DISABLED);
+
+                if (awaitingDraw)
+                {
+                    Log.d(TAG, "White confirms the draw");
+                    awaitingDraw = false;
+                    isGameOver = true;
+                    modifySettingsControls(State.ENABLED);
+
+                    ContentValues values = new ContentValues();
+                    values.put(StatDBHelper.ID, 0);
+                    values.put(StatDBHelper.BLACK_TIME, service.getTime(GameClockBinder.BLACK_PLAYER_ID));
+                    values.put(StatDBHelper.WHITE_TIME, service.getTime(GameClockBinder.WHITE_PLAYER_ID));
+                    resolver.insert(StatsProvider.CONTENT_URI, values);
+                }
+                else
+                {
+                    Log.d(TAG, "White initiates a draw");
+                    awaitingDraw = true;
                     modifyBlackControls(State.ENABLED);
-                    isWhiteTurn = false;
-                    service.turn();
-                    break;
+                }
+                findViewById(R.id.layMain_White).setVisibility(View.INVISIBLE);
 
-                case R.id.btnMain_WhiteLose:
-                    Log.d(TAG, "White lost");
-                    whiteLose();
-                    break;
+                TextView txtw = (TextView) findViewById(R.id.txtMain_White);
+                txtw.setVisibility(View.VISIBLE);
+                txtw.setText(resources.getString(R.string.draw));
+                txtw.setTextColor(resources.getColor(R.color.draw));
+                break;
 
-                case R.id.btnMain_WhiteDraw:
-                    modifyWhiteControls(State.DISABLED);
-
-                    if (awaitingDraw)
-                    {
-                        Log.d(TAG, "White confirms the draw");
-
-                        awaitingDraw = false;
-                        stats.list.add(new Stat(white, black, Stat.Won.DRAW));
-                        Stats.putStats(this, stats);
-
-                        isGameOver = true;
-
-                        modifySettingsControls(State.ENABLED);
-                    }
-                    else
-                    {
-                        Log.d(TAG, "White initiates a draw");
-                        awaitingDraw = true;
-
-                        modifyBlackControls(State.ENABLED);
-                        isWhiteTurn = false;
-                    }
-                    findViewById(R.id.layMain_White).setVisibility(View.INVISIBLE);
-
-                    TextView txtw = (TextView) findViewById(R.id.txtMain_White);
-                    txtw.setVisibility(View.VISIBLE);
-                    txtw.setText(resources.getString(R.string.draw));
-                    txtw.setTextColor(resources.getColor(R.color.draw));
-                    break;
-
-                case R.id.btnMain_Black:
-                    if (awaitingDraw)
-                    {
-                        awaitingDraw = false;
-                        findViewById(R.id.layMain_White).setVisibility(View.VISIBLE);
-                        findViewById(R.id.txtMain_White).setVisibility(View.INVISIBLE);
-                    }
-
-                    Log.d(TAG, "Black passed the turn");
+            case R.id.btnMain_Black:
+                if (awaitingDraw)
+                {
                     awaitingDraw = false;
-                    modifyWhiteControls(State.ENABLED);
-                    modifyBlackControls(State.DISABLED);
-                    isWhiteTurn = true;
-                    service.turn();
-                    break;
+                    findViewById(R.id.layMain_White).setVisibility(View.VISIBLE);
+                    findViewById(R.id.txtMain_White).setVisibility(View.INVISIBLE);
+                }
 
-                case R.id.btnMain_BlackLose:
-                    Log.d(TAG, "Black lost");
-                    blackLose();
-                    break;
+                Log.d(TAG, "Black passed the turn");
+                awaitingDraw = false;
+                modifyWhiteControls(State.ENABLED);
+                modifyBlackControls(State.DISABLED);
+                service.turn();
+                break;
 
-                case R.id.btnMain_BlackDraw:
-                    modifyBlackControls(State.DISABLED);
+            case R.id.btnMain_BlackLose:
+                Log.d(TAG, "Black lost");
+                blackLose();
+                break;
 
-                    if (awaitingDraw)
-                    {
-                        Log.d(TAG, "Black confirms the draw");
+            case R.id.btnMain_BlackDraw:
+                modifyBlackControls(State.DISABLED);
 
-                        awaitingDraw = false;
-                        stats.list.add(new Stat(white, black, Stat.Won.DRAW));
-                        Stats.putStats(this, stats);
+                if (awaitingDraw)
+                {
+                    Log.d(TAG, "Black confirms the draw");
+                    awaitingDraw = false;
+                    isGameOver = true;
+                    modifySettingsControls(State.ENABLED);
 
-                        isGameOver = true;
+                    ContentValues values = new ContentValues();
+                    values.put(StatDBHelper.ID, 0);
+                    values.put(StatDBHelper.BLACK_TIME, service.getTime(GameClockBinder.BLACK_PLAYER_ID));
+                    values.put(StatDBHelper.WHITE_TIME, service.getTime(GameClockBinder.WHITE_PLAYER_ID));
+                    resolver.insert(StatsProvider.CONTENT_URI, values);
+                }
+                else
+                {
+                    Log.d(TAG, "Black initiates a draw");
+                    awaitingDraw = true;
+                }
+                findViewById(R.id.layMain_Black).setVisibility(View.INVISIBLE);
 
-                        modifySettingsControls(State.ENABLED);
-                    }
-                    else
-                    {
-                        Log.d(TAG, "Black initiates a draw");
-                        awaitingDraw = true;
+                TextView txtb = (TextView) findViewById(R.id.txtMain_Black);
+                txtb.setVisibility(View.VISIBLE);
+                txtb.setText(resources.getString(R.string.draw));
+                txtb.setTextColor(resources.getColor(R.color.draw));
+                break;
 
-                        modifyWhiteControls(State.ENABLED);
-                        isWhiteTurn = true;
-                    }
-                    findViewById(R.id.layMain_Black).setVisibility(View.INVISIBLE);
-
-                    TextView txtb = (TextView) findViewById(R.id.txtMain_Black);
-                    txtb.setVisibility(View.VISIBLE);
-                    txtb.setText(resources.getString(R.string.draw));
-                    txtb.setTextColor(resources.getColor(R.color.draw));
-                    break;
-
-                default:
-                    break;
+            default:
+                break;
             }
         }
         catch (RemoteException ex)
@@ -256,15 +245,11 @@ public class MainActivity
 
     private void setClockTimes(Preferences prefs)
     {
-        AnalogClockView white = (AnalogClockView)findViewById(R.id.btnMain_White);
-        white.setH(prefs.whiteTime.h % 12);
-        white.setM(prefs.whiteTime.m % 60);
-        white.setS(prefs.whiteTime.s % 60);
+        AnalogClockView whitev = (AnalogClockView)findViewById(R.id.btnMain_White);
+        whitev.setTime(white);
 
-        AnalogClockView black = (AnalogClockView)findViewById(R.id.btnMain_Black);
-        black.setH(prefs.blackTime.h % 12);
-        black.setM(prefs.blackTime.m % 60);
-        black.setS(prefs.blackTime.s % 60);
+        AnalogClockView blackv = (AnalogClockView)findViewById(R.id.btnMain_Black);
+        blackv.setTime(white);
     }
 
 
@@ -292,8 +277,6 @@ public class MainActivity
     private void whiteLose()
     {
         awaitingDraw = false;
-        stats.list.add(new Stat(white, black, Stat.Won.BLACK));
-        Stats.putStats(this, stats);
 
         modifyWhiteControls(State.DISABLED);
         modifyBlackControls(State.DISABLED);
@@ -315,6 +298,12 @@ public class MainActivity
         try
         {
             service.stop();
+
+            ContentValues values = new ContentValues();
+            values.put(StatDBHelper.ID, GameClockBinder.BLACK_PLAYER_ID);
+            values.put(StatDBHelper.BLACK_TIME, service.getTime(GameClockBinder.BLACK_PLAYER_ID));
+            values.put(StatDBHelper.WHITE_TIME, service.getTime(GameClockBinder.WHITE_PLAYER_ID));
+            resolver.insert(StatsProvider.CONTENT_URI, values);
         }
         catch (RemoteException ex)
         {
@@ -328,8 +317,6 @@ public class MainActivity
     private void blackLose()
     {
         awaitingDraw = false;
-        stats.list.add(new Stat(white, black, Stat.Won.WHITE));
-        Stats.putStats(this, stats);
 
         modifyWhiteControls(State.DISABLED);
         modifyBlackControls(State.DISABLED);
@@ -351,11 +338,18 @@ public class MainActivity
         try
         {
             service.stop();
+
+            ContentValues values = new ContentValues();
+            values.put(StatDBHelper.ID, GameClockBinder.WHITE_PLAYER_ID);
+            values.put(StatDBHelper.BLACK_TIME, service.getTime(GameClockBinder.BLACK_PLAYER_ID));
+            values.put(StatDBHelper.WHITE_TIME, service.getTime(GameClockBinder.WHITE_PLAYER_ID));
+            resolver.insert(StatsProvider.CONTENT_URI, values);
         }
         catch (RemoteException ex)
         {
 
         }
+
 
         isGameOver = true;
     }
@@ -408,12 +402,11 @@ public class MainActivity
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private Stats stats;
     private Preferences prefs;
-    private boolean awaitingDraw = false, isWhiteTurn = false;
+    private boolean awaitingDraw = false;
     private boolean isGameOver = false;
     private Resources resources;
     private IGameClockBinder service;
-
     private Time white, black;
+    private ContentResolver resolver;
 }

@@ -156,7 +156,7 @@ public class AnalogClockView
         // Hours hand
         Path hours = new Path();
         canvas.save();
-        canvas.rotate(-h, getXC(), getYC());
+        canvas.rotate(h, getXC(), getYC());
         hours.moveTo(getXC() - 4, getYC() - 15);
         hours.lineTo(getXC() - 10, getYC() - getRadius() + border + 70);
         hours.lineTo(getXC(), getYC() - getRadius() + border + 55);
@@ -170,7 +170,7 @@ public class AnalogClockView
         // Minutes hand
         Path minutes = new Path();
         canvas.save();
-        canvas.rotate(-m, getXC(), getYC());
+        canvas.rotate(m, getXC(), getYC());
         minutes.moveTo(getXC() - 4, getYC() - 15);
         minutes.lineTo(getXC() - 10, getYC() - getRadius() + border + 40);
         minutes.lineTo(getXC(), getYC() - getRadius() + border + 20);
@@ -184,7 +184,7 @@ public class AnalogClockView
         // Seconds hand
         Path seconds = new Path();
         canvas.save();
-        canvas.rotate(-s, getXC(), getYC());
+        canvas.rotate(s, getXC(), getYC());
         seconds.moveTo(getXC() - 2, getYC() - 15);
         seconds.lineTo(getXC() - 2, getYC() - getRadius() + border + 10);
         seconds.lineTo(getXC(), getYC() - getRadius() + border + 10);
