@@ -161,6 +161,7 @@ public class MainActivity
                     Log.d(TAG, "White confirms the draw");
                     awaitingDraw = false;
                     isGameOver = true;
+                    service.stop();
                     modifySettingsControls(State.ENABLED);
 
                     ContentValues values = new ContentValues();
@@ -173,6 +174,7 @@ public class MainActivity
                 {
                     Log.d(TAG, "White initiates a draw");
                     awaitingDraw = true;
+                    service.turn();
                     modifyBlackControls(State.ENABLED);
                 }
                 findViewById(R.id.layMain_White).setVisibility(View.INVISIBLE);
@@ -211,6 +213,7 @@ public class MainActivity
                     Log.d(TAG, "Black confirms the draw");
                     awaitingDraw = false;
                     isGameOver = true;
+                    service.stop();
                     modifySettingsControls(State.ENABLED);
 
                     ContentValues values = new ContentValues();
@@ -222,7 +225,9 @@ public class MainActivity
                 else
                 {
                     Log.d(TAG, "Black initiates a draw");
+                    service.turn();
                     awaitingDraw = true;
+                    modifyWhiteControls(State.ENABLED);
                 }
                 findViewById(R.id.layMain_Black).setVisibility(View.INVISIBLE);
 
