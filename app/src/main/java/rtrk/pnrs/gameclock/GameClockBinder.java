@@ -85,7 +85,7 @@ public class GameClockBinder
                     }
                     else
                     {
-                        whiteTime = Time.fromLong(whiteTime.toLong() - second.toLong());
+                        whiteTime = Time.fromLong(GameTime.decreaseTime(whiteTime.toLong(), second.toLong()));
                         listener.onTimeChange(WHITE_PLAYER_ID, whiteTime.toLong());
                     }
                 }
@@ -97,7 +97,7 @@ public class GameClockBinder
                     }
                     else
                     {
-                        blackTime = Time.fromLong(blackTime.toLong() - second.toLong());
+                        blackTime = Time.fromLong(GameTime.decreaseTime(blackTime.toLong(), second.toLong()));
                         listener.onTimeChange(BLACK_PLAYER_ID, blackTime.toLong());
                     }
                 }
