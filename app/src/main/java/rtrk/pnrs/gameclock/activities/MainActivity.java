@@ -72,7 +72,7 @@ public class MainActivity
 
         resolver = getContentResolver();
 
-        setClockTimes(prefs);
+        setClockTimes();
     }
 
 
@@ -82,7 +82,7 @@ public class MainActivity
         super.onResume();
 
         prefs = Preferences.getPreferences(this);
-        setClockTimes(prefs);
+        setClockTimes();
     }
 
 
@@ -248,9 +248,10 @@ public class MainActivity
     }
 
 
-    private void setClockTimes(Preferences prefs)
+    private void setClockTimes()
     {
         AnalogClockView whitev = (AnalogClockView)findViewById(R.id.btnMain_White);
+        white.h -= 6;
         whitev.setTime(white);
 
         AnalogClockView blackv = (AnalogClockView)findViewById(R.id.btnMain_Black);
@@ -381,6 +382,7 @@ public class MainActivity
         public void onTimeChange(int player, long time) throws RemoteException
         {
             Time t = Time.fromLong(time);
+            t.h -= 6;
 
             if (player == GameClockBinder.WHITE_PLAYER_ID)
             {

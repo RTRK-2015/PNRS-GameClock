@@ -71,35 +71,39 @@ public class GameClockBinder
         {
             try
             {
+                boolean local;
                 synchronized (mutex)
                 {
-                    if (whitesTurn)
+                    local = whitesTurn;
+                }
+
+                if (local)
+                {
+                    if (whiteTime.toLong() <= 0)
                     {
-                        if (whiteTime.toLong() <= 0)
-                        {
-                            listener.onTimesUp(WHITE_PLAYER_ID);
-                        }
-                        else
-                        {
-                            whiteTime = Time.fromLong(whiteTime.toLong() - second.toLong());
-                            listener.onTimeChange(WHITE_PLAYER_ID, whiteTime.toLong());
-                        }
+                        listener.onTimesUp(WHITE_PLAYER_ID);
                     }
                     else
                     {
-                        if (blackTime.toLong() <= 0)
-                        {
-                            listener.onTimesUp(BLACK_PLAYER_ID);
-                        }
-                        else
-                        {
-                            blackTime = Time.fromLong(blackTime.toLong() - second.toLong());
-                            listener.onTimeChange(BLACK_PLAYER_ID, blackTime.toLong());
-                        }
+                        whiteTime = Time.fromLong(whiteTime.toLong() - second.toLong());
+                        listener.onTimeChange(WHITE_PLAYER_ID, whiteTime.toLong());
+                    }
+                }
+                else
+                {
+                    if (blackTime.toLong() <= 0)
+                    {
+                        listener.onTimesUp(BLACK_PLAYER_ID);
+                    }
+                    else
+                    {
+                        blackTime = Time.fromLong(blackTime.toLong() - second.toLong());
+                        listener.onTimeChange(BLACK_PLAYER_ID, blackTime.toLong());
                     }
                 }
 
-                handler.postDelayed(caller, 1000);
+                if (handler != null)
+                    handler.postDelayed(caller, 1000);
             }
             catch (RemoteException ex)
             {

@@ -12,7 +12,7 @@
     <string name="btnMain_Lose">Lose</string>
     <string name="btnMain_Draw">Draw</string>
 
-    <string name="draw">Draw</string>
+    <string name="draw">   Draw</string>
     <string name="lose">Lose</string>
     <string name="win">Win</string>
 

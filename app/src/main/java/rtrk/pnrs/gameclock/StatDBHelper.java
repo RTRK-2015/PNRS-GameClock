@@ -35,7 +35,7 @@ public class StatDBHelper
     {
         String sql =
             String.format("CREATE TABLE %s", TABLE) +
-            String.format("( %s INTEGER CHECK(\"id\" in (1, 2))", ID) +
+            String.format("( %s INTEGER CHECK(\"id\" in (0, 1, 2))", ID) +
             String.format(", %s TEXT", WHITE_TIME) +
             String.format(", %s TEXT", BLACK_TIME) +
             ");";
